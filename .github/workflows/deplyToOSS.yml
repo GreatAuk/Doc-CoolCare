@@ -1,0 +1,41 @@
+name: deploy to aliyun oss
+
+on:
+  # 监听 push 操作
+  push:
+    # 只监听 staging 分支的 push 操作
+    branches: [ master ]
+  # 监听 pull_request 操作
+  pull_request:
+    branches: [ master ]
+  # 允许手动从 Actions tab 运行这个 workflows
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # 获取源码
+      - name: Checkout
+        # 使用 action 库 actions/checkout 获取源码
+        uses: actions/checkout@master
+      # 使用 node:12
+      - name: use Node.js 12.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: 12.x
+      # yarn install
+      - name: yarn install and build
+        run: |
+          yarn install
+          yarn run build
+        env:
+          CI: true
+      # 部署到阿里云 OSS
+      - name: setup aliyun oss
+        uses: manyuanrong/setup-ossutil@master
+        with:
+          endpoint: oss-cn-shanghai.aliyuncs.com
+          access-key-id: ${{ secrets.ALIYUN_ACCESSKEY_ID }}
+          access-key-secret: ${{ secrets.ALIYUN_ACCESSKEY_SECRET }}
+      - name: cp files to aliyun
+        run: ossutil cp -rf doc/.vuepress/dist oss://doc-sinocold/
