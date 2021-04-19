@@ -38,4 +38,4 @@ jobs:
           access-key-id: ${{ secrets.ALIYUN_ACCESSKEY_ID }}
           access-key-secret: ${{ secrets.ALIYUN_ACCESSKEY_SECRET }}
       - name: cp files to aliyun
-        run: ossutil cp -rf .vuepress/dist oss://doc-coolcare/
+        run: ossutil cp -rf ./doc.vuepress/dist oss://doc-coolcare/
